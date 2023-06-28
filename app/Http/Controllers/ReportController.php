@@ -470,7 +470,7 @@ class ReportController extends Controller
             $nPart_num = $row->PART_NUMBER;
             $n_brand = $row->DESCRIPTION;
 
-            $sql3 = DB::connection('sqlsrv2')->table('ALPHATIRES')
+            $sql3 = DB::connection('sqlsrv2')->table('BLACKSTIRESERVICE')
                 ->select('Part_Number as nPartNumber', 'offer as nOffer', 'LATMWF as LATOffer', 'KENMWF as KENOffer', 'Vendor_Code as nVCode')
                 ->where('Part_Number', $nPart_num)
                 ->where('offer', '<>', 0)
@@ -590,11 +590,7 @@ class ReportController extends Controller
                 $sheet->setCellValue('D' . $i, $sql4->mLoadSpeed ?? '');
                 $sheet->setCellValue('E' . $i, $sql4->mPattern ?? '');
                 $sheet->setCellValue('F' . $i, $sql4->mPosition ?? '');
-                if ($sql4 !== null && $sql4->mPly == 0) {
-                    $sheet->setCellValue('G' . $i, '');
-                } else {
-                    $sheet->setCellValue('G' . $i, $sql4 !== null ? $sql4->mPly : '');
-                }
+                $sheet->setCellValue('G' . $i, $sql4 !== null && is_numeric($sql4->mPly) ? $sql4->mPly : '');
 
                 if ($row->WEIGHT == 0) {
                     if (isset($size[$row->TIRESIZE_WIDTH . $row->TIRESIZE_RATIO . $row->TIRESIZE_WHEEL]['final_weight'])) {
@@ -1149,7 +1145,7 @@ class ReportController extends Controller
             $unq_id = $row->VENDOR_CODE . $row->PART_NUMBER;
             $nPart_num = $row->PART_NUMBER;
 
-            $sql3 = DB::connection('sqlsrv2')->table('ALPHATIRES')
+            $sql3 = DB::connection('sqlsrv2')->table('BLACKSTIRESERVICE')
                 ->select('Part_Number as nPartNumber', 'offer as nOffer', 'LATMWF as LATOffer', 'KENMWF as KENOffer', 'Vendor_Code as nVCode')
                 ->where('Part_Number', $nPart_num)
                 ->where('offer', '<>', 0)
@@ -1269,11 +1265,7 @@ class ReportController extends Controller
                 // }
 
                 $sheet2->setCellValue('F' . $i, $sql4->mPosition ?? '');
-                if ($sql4 !== null && $sql4->mPly == 0) {
-                    $sheet->setCellValue('G' . $i, '');
-                } else {
-                    $sheet->setCellValue('G' . $i, $sql4 !== null ? $sql4->mPly : '');
-                }
+                $sheet2->setCellValue('G' . $i, $sql4 !== null && is_numeric($sql4->mPly) ? $sql4->mPly : '');
                 // $sheet2->setCellValue('G'.$i, $sql4->mPly);
 
                 if ($row->WEIGHT == 0) {
@@ -1283,7 +1275,6 @@ class ReportController extends Controller
                         $weight = 0;
                     }
                 } else {
-
                     $weight = $row->WEIGHT;
                 }
                 $sheet2->setCellValue('BE' . $i, number_format($weight, 2));
