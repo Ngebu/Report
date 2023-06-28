@@ -593,7 +593,7 @@ class ReportController extends Controller
                 if ($sql4 !== null && $sql4->mPly == 0) {
                     $sheet->setCellValue('G' . $i, '');
                 } else {
-                    $sheet->setCellValue('G' . $i, $sql4->mPly);
+                    $sheet->setCellValue('G' . $i, $sql4 !== null ? $sql4->mPly : '');
                 }
 
                 if ($row->WEIGHT == 0) {
@@ -1270,9 +1270,9 @@ class ReportController extends Controller
 
                 $sheet2->setCellValue('F' . $i, $sql4->mPosition ?? '');
                 if ($sql4 !== null && $sql4->mPly == 0) {
-                    $sheet2->setCellValue('G' . $i, '');
+                    $sheet->setCellValue('G' . $i, '');
                 } else {
-                    $sheet2->setCellValue('G' . $i, $sql4->mPly);
+                    $sheet->setCellValue('G' . $i, $sql4 !== null ? $sql4->mPly : '');
                 }
                 // $sheet2->setCellValue('G'.$i, $sql4->mPly);
 
@@ -1285,7 +1285,6 @@ class ReportController extends Controller
                 } else {
 
                     $weight = $row->WEIGHT;
-                    
                 }
                 $sheet2->setCellValue('BE' . $i, number_format($weight, 2));
 
