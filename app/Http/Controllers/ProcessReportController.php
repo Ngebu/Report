@@ -54,7 +54,7 @@ class ProcessReportController extends Controller
 
         // dd($query);
 
-        $query2 = DB::table('ALLINOFFERSKULIST as a')
+        $query2 = DB::connection('sqlsrv')->table('ALLINOFFERSKULIST as a')
             ->select(
                 'a.VENDOR_CODE',
                 'a.DESCRIPTION',
@@ -475,48 +475,148 @@ class ProcessReportController extends Controller
 
             $sheet->getRowDimension($i)->setRowHeight(18.75);
 
-            $cellStyles = [
-                'alignment' => [
-                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
-                ],
-                'fill' => array(
-                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                    'startColor' => ($i % 2 == 0) ? array('argb' => 'ffff99') : array('argb' => 'FFFFFF')
-                ),
-            ];
+            if ($i % 2 == 0) {
+                $sheet->getStyle('A' . $i . ':M' . $i)->applyFromArray(
+                    array(
+                        'alignment' => [
+                            'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+                        ],
+                        'fill' => array(
+                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                            'startColor' => array('argb' => 'ffff99')
 
-            $sheet->getStyle('A' . $i . ':M' . $i)->applyFromArray($cellStyles);
-            $sheet->getStyle('P' . $i . ':V' . $i)->applyFromArray($cellStyles);
-            $sheet->getStyle('Z' . $i . ':AH' . $i)->applyFromArray($cellStyles);
+                        ),
+                    )
+                );
+                $sheet->getStyle('P' . $i . ':V' . $i)->applyFromArray(
+                    array(
+                        'alignment' => [
+                            'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+                        ],
+                        'fill' => array(
+                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                            'startColor' => array('argb' => 'ffff99')
+
+                        ),
+                    )
+                );
+
+                $sheet->getStyle('Z' . $i . ':AH' . $i)->applyFromArray(
+                    array(
+                        'alignment' => [
+                            'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+                        ],
+                        'fill' => array(
+                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                            'startColor' => array('argb' => 'ffff99')
+
+                        ),
+                    )
+                );
+            } else {
+                $sheet->getStyle('A' . $i . ':J' . $i)->applyFromArray(
+                    array(
+                        'alignment' => [
+                            'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+                        ],
+                        'fill' => array(
+                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                            'startColor' => array('argb' => 'FFFFFF')
+
+                        ),
+                    )
+                );
+                $sheet->getStyle('P' . $i . ':V' . $i)->applyFromArray(
+                    array(
+                        'alignment' => [
+                            'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+                        ],
+                        'fill' => array(
+                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                            'startColor' => array('argb' => 'FFFFFF')
+
+                        ),
+                    )
+                );
+                $sheet->getStyle('Z' . $i . ':AH' . $i)->applyFromArray(
+                    array(
+                        'alignment' => [
+                            'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+                        ],
+                        'fill' => array(
+                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                            'startColor' => array('argb' => 'FFFFFF')
+
+                        ),
+                    )
+                );
+            }
 
             if ($sql3 !== null && $row->PART_NUMBER == $sql3->nPartNumber && strtoupper($row->VENDOR_CODE) == strtoupper($sql3->nVCode)) {
-                $_manufacturer = ($row->DESCRIPTION == 'MISC TIRE') ? $row->LEGACY_PART_REFERENCE . '-' : $row->DESCRIPTION;
+                // dd($sql3);
 
+                if (strtoupper($row->DESCRIPTION) == 'MISC TIRE') {
+                    $_manufacturer = $row->LEGACY_PART_REFERENCE . '-';
+                } else {
+                    $_manufacturer = $row->DESCRIPTION;
+                }
+
+
+                // $sheet->setCellValue('A'.$i, $_manufacturer);
                 $sheet->setCellValue('A' . $i, $sql4->mBrand ?? '');
                 $sheet->setCellValue('B' . $i, $sql4->mProdCode ?? '');
+
                 $sheet->setCellValue('C' . $i, $sql4->mSize ?? '');
                 $sheet->setCellValue('D' . $i, $sql4->mLoadSpeed ?? '');
                 $sheet->setCellValue('E' . $i, $sql4->mPattern ?? '');
                 $sheet->setCellValue('F' . $i, $sql4->mPosition ?? '');
-                $sheet->setCellValue('G' . $i, ($sql4 !== null && is_numeric($sql4->mPly)) ? $sql4->mPly : '');
+                $sheet->setCellValue('G' . $i, $sql4 !== null && is_numeric($sql4->mPly) ? $sql4->mPly : '');
 
-                $weight = ($row->WEIGHT == 0) ? ($size[$row->TIRESIZE_WIDTH . $row->TIRESIZE_RATIO . $row->TIRESIZE_WHEEL]['final_weight'] ?? 0) : $row->WEIGHT;
+                if ($row->WEIGHT == 0) {
+                    if (isset($size[$row->TIRESIZE_WIDTH . $row->TIRESIZE_RATIO . $row->TIRESIZE_WHEEL]['final_weight'])) {
+                        $weight = $size[$row->TIRESIZE_WIDTH . $row->TIRESIZE_RATIO . $row->TIRESIZE_WHEEL]['final_weight'];
+                    } else {
+                        $weight = 0;
+                    }
+                } else {
+                    $weight = $row->WEIGHT;
+                }
                 $sheet->setCellValue('BE' . $i, number_format($weight, 2));
 
-                $onhand_qty = ($row->Vernon_AVAIL > 200) ? 200 : $row->Vernon_AVAIL;
+                if ($row->Vernon_AVAIL > 200) {
+                    $onhand_qty = 200;
+                } else {
+                    $onhand_qty = $row->Vernon_AVAIL;
+                }
                 $sheet->setCellValue('H' . $i, $onhand_qty);
                 $sheet->setCellValue('I' . $i, $sql3->nOffer);
                 $sheet->setCellValue('L' . $i, $row->FET);
 
-                $onhand_qty_lat = ($row->Latrobe_AVAIL > 200) ? 200 : $row->Latrobe_AVAIL;
+
+                if ($row->Latrobe_AVAIL > 200) {
+                    $onhand_qty_lat = 200;
+                } else {
+                    $onhand_qty_lat = $row->Latrobe_AVAIL;
+                }
+                // $sheet->setCellValue('N' . $i, $_manufacturer);
                 $sheet->setCellValue('O' . $i, $row->PART_NUMBER);
                 $sheet->setCellValue('P' . $i, $row->ITEM_DESC);
                 $sheet->setCellValue('Q' . $i, $onhand_qty_lat);
                 $sheet->setCellValue('R' . $i, $sql3->LATOffer);
                 $sheet->setCellValue('U' . $i, $row->FET);
 
-                $onhand_qty_lat = ($row->KENTUCKY_AVAIL > 200) ? 200 : $row->KENTUCKY_AVAIL;
+                // KENTUCKY
+                if ($row->KENTUCKY_AVAIL > 200) {
+                    $onhand_qty_lat = 200;
+                } else {
+                    $onhand_qty_lat = $row->KENTUCKY_AVAIL;
+                }
                 $sheet->setCellValue('Z' . $i, $_manufacturer);
                 $sheet->setCellValue('AA' . $i, $row->PART_NUMBER);
                 $sheet->setCellValue('AB' . $i, $row->ITEM_DESC);
@@ -524,12 +624,36 @@ class ProcessReportController extends Controller
                 $sheet->setCellValue('AD' . $i, $sql3->KENOffer);
                 $sheet->setCellValue('AG' . $i, $row->FET);
 
-                $sheet->setCellValue('K' . $i, '=SUM(I' . $i . '*J' . $i . ')+(L' . $i . '*J' . $i . ')');
-                $sheet->setCellValue('T' . $i, '=SUM(R' . $i . '*S' . $i . ')+(U' . $i . '*S' . $i . ')');
-                $sheet->setCellValue('AF' . $i, '=SUM(AD' . $i . '*AE' . $i . ')+(AG' . $i . '*AE' . $i . ')');
-                $sheet->setCellValue('BD' . $i, '=SUM(BE' . $i . '*J' . $i . ')');
-                $sheet->setCellValue('X' . $i, '=SUM(BE' . $i . '*S' . $i . ')');
-                $sheet->setCellValue('AI' . $i, '=SUM(BE' . $i . '*AE' . $i . ')');
+
+                $sheet->setCellValue(
+                    'K' . $i,
+                    '=SUM(I' . $i . '*J' . $i . ')+(L' . $i . '*J' . $i . ')'
+                );
+
+                $sheet->setCellValue(
+                    'T' . $i,
+                    '=SUM(R' . $i . '*S' . $i . ')+(U' . $i . '*S' . $i . ')'
+                );
+
+                $sheet->setCellValue(
+                    'AF' . $i,
+                    '=SUM(AD' . $i . '*AE' . $i . ')+(AG' . $i . '*AE' . $i . ')'
+                );
+
+                $sheet->setCellValue(
+                    'BD' . $i,
+                    '=SUM(BE' . $i . '*J' . $i . ')'
+                );
+
+                $sheet->setCellValue(
+                    'X' . $i,
+                    '=SUM(BE' . $i . '*S' . $i . ')'
+                );
+
+                $sheet->setCellValue(
+                    'AI' . $i,
+                    '=SUM(BE' . $i . '*AE' . $i . ')'
+                );
 
                 $sheet->getStyle('J' . $i . ':J' . $i)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('86CB6B');
                 $sheet->getStyle('S' . $i . ':S' . $i)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('86CB6B');

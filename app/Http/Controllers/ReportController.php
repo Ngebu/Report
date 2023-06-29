@@ -29,7 +29,7 @@ class ReportController extends Controller
 
     public function tables()
     {
-        $tableNames = ['BLACKSTIRESERVICE','ALPHATIRES'];
+        $tableNames = ['ACETIREMIAMI','ALFATIRES','ALLAMERICANFLEET','ALMATIRES','BLACKSTIRESERVICE','ALPHATIRES'];
 
         foreach($tableNames as $tableName)
         {
