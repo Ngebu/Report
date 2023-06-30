@@ -18,4 +18,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/sent-email', [ReportController::class, 'tables'])->name('sentEmail');
+Route::get('/sentVLK', [ReportController::class, 'tablesVLK'])->name('sentEmailVLK');
+Route::get('/sentV', [ReportController::class, 'tablesV'])->name('sentEmailV');
